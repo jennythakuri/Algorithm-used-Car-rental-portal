@@ -20,6 +20,8 @@ function getAllCars()
     }
 }
 
+
+// Filtering Algorithm---The filterCars function uses the array_filter algorithm to filter the car list based on criteria like brand, fuel type, and price range.
 function filterCars($cars, $criteria)
 {
     $filteredCars = $cars;
@@ -48,6 +50,8 @@ function filterCars($cars, $criteria)
     return $filteredCars;
 }
 
+
+// Sorting Algorithm--The sortCars function uses the usort algorithm to sort cars by attributes such as PricePerDay in ascending or descending order.
 function sortCars($cars, $sortBy = 'PricePerDay', $order = 'asc')
 {
     usort($cars, function($a, $b) use ($sortBy, $order) {
@@ -111,8 +115,6 @@ function getCarCount()
 $recentlyAddedCars = getRecentlyAddedCars();
 $totalCarCount = getCarCount();
 ?>
-
-
 
 
 <!DOCTYPE HTML>
@@ -199,125 +201,116 @@ $cnt=$query->rowCount();
 </div>
 
 <?php 
-$sql = "SELECT v.*, b.BrandName 
-        FROM tblvehicles v
-        JOIN tblbrands b ON b.id = v.VehiclesBrand
-        LEFT JOIN tblbooking tb ON tb.VehicleId = v.id
-        WHERE (tb.Status IS NULL OR tb.Status != 'Booked')";  // Ensure cars are not booked
-$query = $dbh->prepare($sql);
+$sql = "SELECT tblvehicles.*,tblbrands.BrandName,tblbrands.id as bid  from tblvehicles join tblbrands on tblbrands.id=tblvehicles.VehiclesBrand";
+$query = $dbh -> prepare($sql);
 $query->execute();
-$results = $query->fetchAll(PDO::FETCH_OBJ);
-$cnt = 1;
-
-if ($query->rowCount() > 0) {
-    foreach ($results as $result) {
-        ?>
+$results=$query->fetchAll(PDO::FETCH_OBJ);
+$cnt=1;
+if($query->rowCount() > 0)
+{
+foreach($results as $result)
+{  
+?>
         <div class="product-listing-m gray-bg">
-            <div class="product-listing-img"><img src="admin/img/vehicleimages/<?php echo htmlentities($result->Vimage1);?>" class="img-responsive" alt="Image" /></div>
-            <div class="product-listing-content">
-                <h5><a href="vehical-details.php?vhid=<?php echo htmlentities($result->id);?>"><?php echo htmlentities($result->BrandName);?> , <?php echo htmlentities($result->VehiclesTitle);?></a></h5>
-                <p class="list-price">NPR<?php echo htmlentities($result->PricePerDay);?> Per Day</p>
-                <ul>
-                    <li><i class="fa fa-user" aria-hidden="true"></i><?php echo htmlentities($result->SeatingCapacity);?> seats</li>
-                    <li><i class="fa fa-calendar" aria-hidden="true"></i><?php echo htmlentities($result->ModelYear);?> model</li>
-                    <li><i class="fa fa-car" aria-hidden="true"></i><?php echo htmlentities($result->FuelType);?></li>
-                </ul>
-                <a href="vehical-details.php?vhid=<?php echo htmlentities($result->id);?>" class="btn">View Details <span class="angle_arrow"><i class="fa fa-angle-right" aria-hidden="true"></i></span></a>
-            </div>
+          <div class="product-listing-img"><img src="admin/img/vehicleimages/<?php echo htmlentities($result->Vimage1);?>" class="img-responsive" alt="Image" /></div>
+          <div class="product-listing-content">
+            <h5><a href="vehical-details.php?vhid=<?php echo htmlentities($result->id);?>"><?php echo htmlentities($result->BrandName);?> , <?php echo htmlentities($result->VehiclesTitle);?></a></h5>
+            <p class="list-price">NPR<?php echo htmlentities($result->PricePerDay);?> Per Day</p>
+            <ul>
+              <li><i class="fa fa-user" aria-hidden="true"></i><?php echo htmlentities($result->SeatingCapacity);?> seats</li>
+              <li><i class="fa fa-calendar" aria-hidden="true"></i><?php echo htmlentities($result->ModelYear);?> model</li>
+              <li><i class="fa fa-car" aria-hidden="true"></i><?php echo htmlentities($result->FuelType);?></li>
+            </ul>
+            <a href="vehical-details.php?vhid=<?php echo htmlentities($result->id);?>" class="btn">View Details <span class="angle_arrow"><i class="fa fa-angle-right" aria-hidden="true"></i></span></a>
+          </div>
         </div>
-        <?php 
-    }
-} else {
-    // Message when no cars are available
-    echo '<p>No cars available at the moment.</p>';
-}
-
+<?php 
+}} 
 ?>
          </div>
       
-     <!-- Side-Bar -->
-<aside class="col-md-3 col-md-pull-9">
-  <div class="sidebar_widget">
-    <div class="widget_heading">
-      <h5><i class="fa fa-filter" aria-hidden="true"></i> Find Your Car</h5>
-    </div>
-    <div class="sidebar_filter">
-      <form action="search-carresult.php" method="post">
-        <div class="form-group select">
-          <select class="form-control" name="brand">
-            <option value="">Select Brand</option>
-            <?php 
-            $sql = "SELECT id, BrandName FROM tblbrands";
-            $query = $dbh->prepare($sql);
-            $query->execute();
-            $brands = $query->fetchAll(PDO::FETCH_OBJ);
-            foreach ($brands as $brand) {
-              echo "<option value='" . htmlentities($brand->id) . "'>" . htmlentities($brand->BrandName) . "</option>";
-            }
-            ?>
-          </select>
+      <!--Side-Bar-->
+      <aside class="col-md-3 col-md-pull-9">
+        <div class="sidebar_widget">
+          <div class="widget_heading">
+            <h5><i class="fa fa-filter" aria-hidden="true"></i> Find Your Car </h5>
+          </div>
+          <div class="sidebar_filter">
+            <form action="search-carresult.php" method="post">
+              <div class="form-group select">
+                <select class="form-control" name="brand">
+                  <option>Select Brand</option>
+                  <?php 
+                  $sql = "SELECT * from tblbrands";
+                  $query = $dbh -> prepare($sql);
+                  $query->execute();
+                  $results=$query->fetchAll(PDO::FETCH_OBJ);
+                  if($query->rowCount() > 0)
+                  {
+                    foreach($results as $result)
+                    {  
+                  ?>  
+                  <option value="<?php echo htmlentities($result->id);?>"><?php echo htmlentities($result->BrandName);?></option>
+                  <?php 
+                    }
+                  } 
+                  ?>
+                </select>
+              </div>
+              <div class="form-group select">
+                <select class="form-control" name="fueltype">
+                  <option>Select Fuel Type</option>
+                  <option value="Petrol">Petrol</option>
+                  <option value="Diesel">Diesel</option>
+                  <option value="CNG">CNG</option>
+                </select>
+              </div>
+              <!-- Min Price -->
+              <div class="form-group">
+                <label for="minprice">Min Price (NPR)</label>
+                <input type="number" class="form-control" name="minprice" id="minprice" placeholder="Enter minimum price">
+              </div>
+              <!-- Max Price -->
+              <div class="form-group">
+                <label for="maxprice">Max Price (NPR)</label>
+                <input type="number" class="form-control" name="maxprice" id="maxprice" placeholder="Enter maximum price">
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-block"><i class="fa fa-search" aria-hidden="true"></i> Search Car</button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div class="form-group select">
-          <select class="form-control" name="fueltype">
-            <option value="">Select Fuel Type</option>
-            <option value="Petrol">Petrol</option>
-            <option value="Diesel">Diesel</option>
-            <option value="CNG">CNG</option>
-          </select>
+
+        <div class="sidebar_widget">
+          <div class="widget_heading">
+            <h5><i class="fa fa-car" aria-hidden="true"></i> Recently Listed Cars</h5>
+          </div>
+          <div class="recent_addedcars">
+            <ul>
+<?php 
+$sql = "SELECT tblvehicles.*,tblbrands.BrandName,tblbrands.id as bid  from tblvehicles join tblbrands on tblbrands.id=tblvehicles.VehiclesBrand order by id desc limit 4";
+$query = $dbh -> prepare($sql);
+$query->execute();
+$results=$query->fetchAll(PDO::FETCH_OBJ);
+if($query->rowCount() > 0)
+{
+foreach($results as $result)
+{  
+?>
+              <li class="gray-bg">
+                <div class="recent_post_img"> <a href="vehical-details.php?vhid=<?php echo htmlentities($result->id);?>"><img src="admin/img/vehicleimages/<?php echo htmlentities($result->Vimage1);?>" alt="image"></a> </div>
+                <div class="recent_post_title"> <a href="vehical-details.php?vhid=<?php echo htmlentities($result->id);?>"><?php echo htmlentities($result->BrandName);?> , <?php echo htmlentities($result->VehiclesTitle);?></a>
+                  <p class="widget_price">NPR<?php echo htmlentities($result->PricePerDay);?> Per Day</p>
+                </div>
+              </li>
+              <?php 
+            }}
+?>
+            </ul>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="minprice">Min Price (NPR)</label>
-          <input type="number" class="form-control" name="minprice" id="minprice" placeholder="Enter minimum price">
-        </div>
-        <div class="form-group">
-          <label for="maxprice">Max Price (NPR)</label>
-          <input type="number" class="form-control" name="maxprice" id="maxprice" placeholder="Enter maximum price">
-        </div>
-        <div class="form-group">
-          <button type="submit" class="btn btn-block">
-            <i class="fa fa-search" aria-hidden="true"></i> Search Car
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="sidebar_widget">
-    <div class="widget_heading">
-      <h5><i class="fa fa-car" aria-hidden="true"></i> Recently Listed Cars</h5>
-    </div>
-    <div class="recent_addedcars">
-      <ul>
-        <?php
-        $sql = "SELECT id, VehiclesTitle, PricePerDay, Vimage1 FROM tblvehicles ORDER BY id DESC LIMIT 4";
-        $query = $dbh->prepare($sql);
-        $query->execute();
-        $recentCars = $query->fetchAll(PDO::FETCH_OBJ);
-        foreach ($recentCars as $car) {
-          echo "
-          <li>
-
-
-
-
-          
-            <div class='recent_post_img'>
-              <a href='car-details.php?vhid=" . htmlentities($car->id) . "'>
-                <img src='admin/img/vehicleimages/" . htmlentities($car->Vimage1) . "' alt='" . htmlentities($car->VehiclesTitle) . "'>
-              </a>
-            </div>
-            <div class='recent_post_title'>
-              <a href='car-details.php?vhid=" . htmlentities($car->id) . "'>" . htmlentities($car->VehiclesTitle) . "</a>
-              <p class='widget_price'>NPR " . htmlentities($car->PricePerDay) . " per day</p>
-            </div>
-          </li>";
-        }
-        ?>
-      </ul>
-    </div>
-  </div>
-</aside>
-
+      </aside>
       <!--/Side-Bar--> 
     </div>
   </div>
