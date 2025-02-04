@@ -100,10 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['transaction_id'])) {
             <!-- Display User Info and Payment Info -->
             <h3>User Information</h3>
             <table class="result-table">
-                <tr>
-                    <th>Name</th>
-                    <td><?php echo htmlspecialchars($user_info['first_name']) . ' ' . htmlspecialchars($user_info['last_name']); ?></td>
-                </tr>
+            <tr>
+    <th>Name</th>
+    <td><?php echo htmlspecialchars($user_info['full_name']); ?></td>
+</tr>
+
                 <tr>
                     <th>Email</th>
                     <td><?php echo htmlspecialchars($user_info['email']); ?></td>
@@ -113,8 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['transaction_id'])) {
                     <td><?php echo htmlspecialchars($user_info['phone']); ?></td>
                 </tr>
                 <tr>
-                    <th>Address</th>
-                    <td><?php echo htmlspecialchars($user_info['address']); ?></td>
+                    <th>city</th>
+                    <td><?php echo htmlspecialchars($user_info['city']); ?></td>
                 </tr>
                 <tr>
                     <th>Remarks</th>
